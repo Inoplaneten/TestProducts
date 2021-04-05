@@ -1,0 +1,13 @@
+.titleProduct {
+	margin-bottom: 16px;
+	font-weight: 400;
+	text-transform: capitalize;
+	font-size: 40px;
+    @media screen and (max-width: 1200px) {
+    	font-size: 37px;
+    }
+
+    @media screen and (max-width: 768px) {
+    	font-size: 32px;
+    }
+}

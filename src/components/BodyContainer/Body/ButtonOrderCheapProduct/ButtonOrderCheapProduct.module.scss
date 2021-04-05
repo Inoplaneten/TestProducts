@@ -1,0 +1,23 @@
+.btnOrderCheapProduct {
+	display: block;
+	margin: 69px auto 0;
+	background-color: #50DAA8;
+	border-radius: 16px;
+	padding: 16px 48px;
+	font-size: 24px;
+	color: #fff;
+
+	&:hover {
+		background-color: #4bcfa0;
+	}
+	
+	@media screen and (max-width: 992px) {
+		margin: 40px auto 0;
+    	padding: 14px 40px;
+    	font-size: 20px;
+    }
+
+    @media screen and (max-width: 576px) {
+		font-size: 18px;
+	}
+}

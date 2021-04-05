@@ -1,0 +1,16 @@
+.modalContent {
+	text-align: center;
+	font-size: 20px;
+	@media screen and (max-width: 576px) {
+		font-size: 18px;
+	}
+	& ~ form {
+		margin-top: 32px;
+		@media screen and (max-width: 992px) {
+			margin-top: 20px;
+		}
+	}
+	& p:not(:last-of-type) {
+		margin-bottom: 8px;
+	}
+}
