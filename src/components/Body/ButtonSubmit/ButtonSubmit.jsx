@@ -1,6 +1,6 @@
 import React from 'react';
 import classes from './ButtonSubmit.module.scss';
-import iconBtnSubmit from '../../../../img/iconBtnSubmit.svg';
+import iconBtnSubmit from '../../../assets/img/iconBtnSubmit.svg';
 
 const ButtonSubmit = props => {
     return (

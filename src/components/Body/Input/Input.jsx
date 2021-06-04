@@ -24,12 +24,7 @@ const Input = props => {
                 props.error &&  
                 <span className={`${classes.errorMessage}`}>
                     {
-                        props.errorType.requiered ? props.isErrorMessage.requiered:
-                        props.errorType.words ? props.isErrorMessage.words :
-                        props.errorType.digits ? props.isErrorMessage.digits :
-                        props.errorType.minLength ? props.isErrorMessage.minLength :
-                        props.errorType.maxLength ? props.isErrorMessage.maxLength:
-                        props.isErrorMessage.requiered
+                        props.errorText
                     }
                 </span>
             }

@@ -1,10 +1,8 @@
-import { UPDATE_INPUT_VALUE, NOVALIDATE_INPUT_VALUE, GET_WAIT_FORM, SUCCES_FORM } from "../actionTypes/actionTypes";
+import { UPDATE_INPUT_VALUE, UPDATE_INPUT_HIDDEN_VALUE, NOVALIDATE_INPUT_VALUE, GET_WAIT_FORM, SUCCES_FORM } from "../actionTypes/actionTypes";
 import { isEmpty, isMinLength, isMaxLength, isNumber, isWords, isErrorsForm } from '../../modules/validators';
 
 const initialState = {
     name: 'formOrderProduct',
-    validators: { isErrorsForm },
-    succesForm: false,
     fields: {
         category: {
             type: 'hidden',
@@ -27,23 +25,26 @@ const initialState = {
             name: 'nameСustomer',
             value: '',
             requiered: true,
-            words: true,
-            maxLength: 15,
-            minLength: 5,
             error: false,
-            errorType: {
-                requiered: false,
-                words: false,
-                minLength: false,
-                maxLength: false
-            },
-            isErrorMessage: {
-                requiered: 'This field in required',
-                words: 'Only letters allowed',
-                minLength: `Should contain min 5 characters`,
-                maxLength: `Should contain max 15 characters`,
-            },
-            validators: { isEmpty, isMinLength, isMaxLength, isWords }
+            errorText: null,
+            validators: [
+                {
+                    getErrorEmpty: value => isEmpty(value),
+                    errorText: 'This field in required'
+                },
+                {
+                    getErrorWords: value => isWords(value),
+                    errorText: 'Only letters allowed'
+                },
+                {
+                    getErrorMinLength: value => isMinLength(value.length, 5),
+                    errorText: 'Should contain min 5 characters'
+                },
+                {
+                    getErrorMaxLength: value => isMaxLength(value.length, 15),
+                    errorText: 'Should contain max 15 characters'
+                },
+            ]
         },
         telСustomer: {
             type: 'tel',
@@ -51,159 +52,113 @@ const initialState = {
             name: 'telСustomer',
             value: '',
             requiered: true,
-            digits: true,
-            minLength: 12,
-            maxLength: 12,
             error: false,
-            errorType: {
-                requiered: false,
-                digits: false,
-                minLength: false,
-                maxLength: false
-            },
-            isErrorMessage: {
-                requiered: 'This field in required',
-                digits: 'Only letters number',
-                minLength: `Should contain 12 characters`,
-                maxLength: `Should contain 12 characters`
-            },
-            validators: { isEmpty, isMinLength, isMaxLength, isNumber }
+            errorText: null,
+            validators: [
+                {
+                    getErrorEmpty: value => isEmpty(value),
+                    errorText: 'This field in required'
+                },
+                {
+                    getErrorNumber: value => isNumber(value),
+                    errorText: 'Only letters number'
+                },
+                {
+                    getErrorMinLength: value => isMinLength(value.length, 12),
+                    errorText: 'Should contain 12 characters'
+                },
+                {
+                    getErrorMaxLength: value => isMaxLength(value.length, 12),
+                    errorText: 'Should contain 12 characters'
+                },
+            ]
         }
     },
+    validators: { getErrorsForm: form => isErrorsForm(form) },
+    succesForm: false,
     isLoading: false
 }
 
 const formOrderProduct = (state = initialState, action) => {
     switch(action.type) {
         case UPDATE_INPUT_VALUE:
-            if(state.fields[action.inputName].type !== 'hidden') {
-                return {
-                    ...state,
-                    fields: {
-                        ...state.fields,
-                        [action.inputName]: {
-                            ...state.fields[action.inputName],
-                            value: action.currentValue,
-                            error: false,
-                            errorType: Object.keys(state.fields[action.inputName].errorType).reduce((errors, errorName) => ({...errors, [errorName]: false}), {})
-                        }
-                    }
-                }
-            }else {
-                return {
-                    ...state,
-                    fields: {
-                        ...state.fields,
-                        [action.inputName]: {
-                            ...state.fields[action.inputName],
-                            value: action.currentValue
-                        }
-                    }
-                }
-            }       
-        case NOVALIDATE_INPUT_VALUE:
-            if('validators' in state.fields[action.inputName]) {
-                if((state.fields[action.inputName].requiered && 'isEmpty' in state.fields[action.inputName].validators) && state.fields[action.inputName].validators.isEmpty(action.currentValue)) {
-                    return {
-                        ...state,
-                        fields: {
-                            ...state.fields,
-                            [action.inputName]: {
-                                ...state.fields[action.inputName],
-                                value: action.currentValue,
-                                error: true,
-                                errorType: {
-                                    ...state.fields[action.inputName].errorType,
-                                    requiered: true
-                                }
-                            }
-                        }
-                    }
-                }else if(action.currentValue.length) {
-                    if((state.fields[action.inputName].words && 'isWords' in state.fields[action.inputName].validators) && !state.fields[action.inputName].validators.isWords(action.currentValue)) {
-                        return {
-                            ...state,
-                            fields: {
-                                ...state.fields,
-                                [action.inputName]: {
-                                    ...state.fields[action.inputName],
-                                    value: action.currentValue,
-                                    error: true,
-                                    errorType: {
-                                        ...state.fields[action.inputName].errorType,
-                                        words: true
-                                    }
-                                }
-                            }
-                        }
-                    }else if((state.fields[action.inputName].digits && 'isNumber' in state.fields[action.inputName].validators) && !state.fields[action.inputName].validators.isNumber(action.currentValue)) {
-                        return {
-                            ...state,
-                            fields: {
-                                ...state.fields,
-                                [action.inputName]: {
-                                    ...state.fields[action.inputName],
-                                    value: action.currentValue,
-                                    error: true,
-                                    errorType: {
-                                        ...state.fields[action.inputName].errorType,
-                                        digits: true
-                                    }
-                                }
-                            }
-                        }
-                    }else if((state.fields[action.inputName].minLength && 'isMinLength' in state.fields[action.inputName].validators) && state.fields[action.inputName].validators.isMinLength(action.currentValue.length, state.fields[action.inputName].minLength)) {
-                        return {
-                            ...state,
-                            fields: {
-                                ...state.fields,
-                                [action.inputName]: {
-                                    ...state.fields[action.inputName],
-                                    value: action.currentValue,
-                                    error: true,
-                                    errorType: {
-                                        ...state.fields[action.inputName].errorType,
-                                        minLength: true
-                                    }
-                                }
-                            }
-                        }
-                    }else if((state.fields[action.inputName].maxLength && 'isMaxLength' in state.fields[action.inputName].validators) && state.fields[action.inputName].validators.isMaxLength(action.currentValue.length, state.fields[action.inputName].maxLength)) {
-                        return {
-                            ...state,
-                            fields: {
-                                ...state.fields,
-                                [action.inputName]: {
-                                    ...state.fields[action.inputName],
-                                    value: action.currentValue,
-                                    error: true,
-                                    errorType: {
-                                        ...state.fields[action.inputName].errorType,
-                                        maxLength: true
-                                    }
-                                }
-                            }
-                        }
+            return {
+                ...state,
+                fields: {
+                    ...state.fields,
+                    [action.inputName]: {
+                        ...state.fields[action.inputName],
+                        value: action.currentValue,
+                        error: false
                     }
                 }
             }
+        case UPDATE_INPUT_HIDDEN_VALUE:
             return {
                 ...state,
-            }                     
+                fields: Object.values(state.fields).reduce((fields, field) => {
+                    if(field.type === 'hidden') {
+                        return {...fields, [field.name]: {...state.fields[field.name], value: action.data[field.name]}} 
+                    }
+                    return {...fields}
+                }, {...state.fields}),
+            }    
+        case NOVALIDATE_INPUT_VALUE:
+            let error,
+                errorText;
+
+            'validators' in state.fields[action.inputName] && state.fields[action.inputName].validators.some(errorType => {
+                if(state.fields[action.inputName].requiered && 'getErrorEmpty' in errorType && errorType.getErrorEmpty(action.currentValue)) {
+                    return (errorText = errorType.errorText, error = true);
+                }else if(action.currentValue.length) {
+                    if('getErrorWords' in errorType && !errorType.getErrorWords(action.currentValue)) {
+                        return (errorText = errorType.errorText, error = true);
+                    }else if('getErrorNumber' in errorType && !errorType.getErrorNumber(action.currentValue)) {
+                        return (errorText = errorType.errorText, error = true);
+                    }else if('getErrorMinLength' in errorType && errorType.getErrorMinLength(action.currentValue)) {
+                        return (errorText = errorType.errorText, error = true);
+                    }else if('getErrorMaxLength' in errorType && errorType.getErrorMaxLength(action.currentValue)) {
+                        return (errorText = errorType.errorText, error = true);
+                    }
+                }
+
+                return (errorText = null, error = false);
+            });
+
+            return {
+                ...state,
+                    fields: {
+                        ...state.fields, 
+                        [action.inputName]: {
+                        ...state.fields[action.inputName], 
+                        value: action.currentValue,
+                        error,
+                        errorText
+                    }    
+                }          
+            }    
         case GET_WAIT_FORM:
             return {
                 ...state,
-                succesForm: true,
-                fields: Object.values(state.fields).reduce((fields, field) => ({...fields, [field.name]:{...state.fields[field.name], value: ''}}), {...state.fields}),  
-                isLoading: true,
+                fields: Object.values(state.fields).reduce((fields, field) => (
+                    {
+                        ...fields, 
+                        [field.name]: {
+                            ...state.fields[field.name], 
+                            value: ''
+                        }
+                    }), {...state.fields}
+                ),
+                succesForm: true,  
+                isLoading: true
             }                   
         case SUCCES_FORM:
            return {
                 ...state,
-                succesForm: false,
                 fields: {
                     ...state.fields,
-                },  
+                },
+                succesForm: false,  
                 isLoading: false
            }
         default: 

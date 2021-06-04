@@ -6,6 +6,7 @@ import {
     GET_VISIBLE_MODAL, 
     GET_HIDDEN_MODAL, 
     UPDATE_INPUT_VALUE,
+    UPDATE_INPUT_HIDDEN_VALUE,
     NOVALIDATE_INPUT_VALUE,
     GET_WAIT_FORM, 
     SUCCES_FORM
@@ -43,6 +44,11 @@ export const setUpdateDataField = (currentValue, inputName) => ({
     type: UPDATE_INPUT_VALUE,
     currentValue,
     inputName
+})
+
+export const setUpdateDataHiddenField = data => ({
+    type: UPDATE_INPUT_HIDDEN_VALUE,
+    data
 })
 
 export const setValidateField = (currentValue, inputName) => ({

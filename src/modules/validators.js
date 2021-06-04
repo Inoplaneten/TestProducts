@@ -15,23 +15,28 @@ export const isWords = value => {
 }
 
 export const isErrorsForm = form =>  {
-    let errorsForm = [];
+    let errorsForm;
     Object.values(form.fields).forEach(field => {
         if('validators' in field) {
-            if(
-                ((field.requiered && 'isEmpty' in field.validators) && field.validators.isEmpty(field.value)) || 
-                ((field.words && 'isWords' in field.validators) && !field.validators.isWords(field.value)) ||
-                ((field.digits && 'isNumber' in field.validators) && !field.validators.isNumber(field.value)) ||
-                ((field.minLength && 'isMinLength' in field.validators) && field.validators.isMinLength(field.value.length, field.minLength)) ||
-                ((field.minLength && 'isMaxLength' in field.validators) && field.validators.isMaxLength(field.value.length, field.maxLength))
-            ) {
-                errorsForm = [...errorsForm, field.name];
-            }
+            field.validators.some(errorType => {
+                if(field.requiered && 'getErrorEmpty' in errorType && errorType.getErrorEmpty(field.value)) {
+                    return (errorsForm = true);
+                }else if(field.value.length) {
+                    if('getErrorWords' in errorType && !errorType.getErrorWords(field.value)) {
+                        return (errorsForm = true);
+                    }else if('getErrorNumber' in errorType && !errorType.getErrorNumber(field.value)) {
+                        return (errorsForm = true);
+                    }else if('getErrorMinLength' in errorType && errorType.getErrorMinLength(field.value)) {
+                        return (errorsForm = true);
+                    }else if('getErrorMaxLength' in errorType && errorType.getErrorMaxLength(field.value)) {
+                        return (errorsForm = true);
+                    }
+                }
+
+                return (errorsForm = false);
+            });
         }
     });
-    if(errorsForm.length) {
-        return true;
-    }else {
-        return false;
-    }
+
+    return errorsForm;
 }
